@@ -26,8 +26,6 @@
 
 #include "rhd2000registers.h"
 
-using namespace std;
-
 // This class creates and manages a data structure representing the internal RAM registers on
 // a RHD2000 chip, and generates command lists to configure the chip and perform other functions.
 // Changing the value of variables within an instance of this class does not directly affect a
@@ -374,22 +372,22 @@ double Rhd2000Registers::setLowerBandwidth(double lowerBandwidth)
     actualLowerBandwidth = lowerBandwidthFromRL(rLActual);
 
     /*
-    cout << endl;
-    cout << fixed << setprecision(1);
-    cout << "Rhd2000Registers::setLowerBandwidth" << endl;
+    std::cout << std::endl;
+    std::cout << fixed << setprecision(1);
+    std::cout << "Rhd2000Registers::setLowerBandwidth" << std::endl;
 
-    cout << "RL DAC3 = " << rLDac3 << ", DAC2 = " << rLDac2 << ", DAC1 = " << rLDac1 << endl;
-    cout << "RL target: " << rLTarget << " Ohms" << endl;
-    cout << "RL actual: " << rLActual << " Ohms" << endl;
+    std::cout << "RL DAC3 = " << rLDac3 << ", DAC2 = " << rLDac2 << ", DAC1 = " << rLDac1 << std::endl;
+    std::cout << "RL target: " << rLTarget << " Ohms" << std::endl;
+    std::cout << "RL actual: " << rLActual << " Ohms" << std::endl;
 
-    cout << setprecision(3);
+    std::cout << setprecision(3);
 
-    cout << "Lower bandwidth target: " << lowerBandwidth << " Hz" << endl;
-    cout << "Lower bandwidth actual: " << actualLowerBandwidth << " Hz" << endl;
+    std::cout << "Lower bandwidth target: " << lowerBandwidth << " Hz" << std::endl;
+    std::cout << "Lower bandwidth actual: " << actualLowerBandwidth << " Hz" << std::endl;
 
-    cout << endl;
-    cout << setprecision(6);
-    cout.unsetf(ios::floatfield);
+    std::cout << std::endl;
+    std::cout << setprecision(6);
+    std::cout.unsetf(ios::floatfield);
     */
 
     return actualLowerBandwidth;
@@ -406,8 +404,8 @@ int Rhd2000Registers::createRhd2000Command(Rhd2000CommandType commandType)
             return 0x6a00;   // 0110101000000000
             break;
         default:
-        cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
-                "Only 'Calibrate' or 'Clear Calibration' commands take zero arguments." << endl;
+        std::cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
+                "Only 'Calibrate' or 'Clear Calibration' commands take zero arguments." << std::endl;
             return -1;
     }
 }
@@ -418,24 +416,24 @@ int Rhd2000Registers::createRhd2000Command(Rhd2000CommandType commandType, int a
     switch (commandType) {
         case Rhd2000CommandConvert:
             if (arg1 < 0 || arg1 > 63) {
-                cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
-                        "Channel number out of range." << endl;
+                std::cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
+                        "Channel number out of range." << std::endl;
                 return -1;
             }
             return 0x0000 + (arg1 << 8);  // 00cccccc0000000h; if the command is 'Convert',
                                           // arg1 is the channel number
         case Rhd2000CommandRegRead:
             if (arg1 < 0 || arg1 > 63) {
-                cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
-                        "Register address out of range." << endl;
+                std::cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
+                        "Register address out of range." << std::endl;
                 return -1;
             }
             return 0xc000 + (arg1 << 8);  // 11rrrrrr00000000; if the command is 'Register Read',
                                           // arg1 is the register address
             break;
         default:
-            cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
-                    "Only 'Convert' and 'Register Read' commands take one argument." << endl;
+            std::cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
+                    "Only 'Convert' and 'Register Read' commands take one argument." << std::endl;
             return -1;
     }
 }
@@ -446,21 +444,21 @@ int Rhd2000Registers::createRhd2000Command(Rhd2000CommandType commandType, int a
     switch (commandType) {
         case Rhd2000CommandRegWrite:
             if (arg1 < 0 || arg1 > 63) {
-                cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
-                        "Register address out of range." << endl;
+                std::cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
+                        "Register address out of range." << std::endl;
                 return -1;
             }
             if (arg2 < 0 || arg2 > 255) {
-                cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
-                        "Register data out of range." << endl;
+                std::cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
+                        "Register data out of range." << std::endl;
                 return -1;
             }
             return 0x8000 + (arg1 << 8) + arg2; // 10rrrrrrdddddddd; if the command is 'Register Write',
                                                 // arg1 is the register address and arg1 is the data
             break;
         default:
-            cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
-                    "Only 'Register Write' commands take two arguments." << endl;
+            std::cerr << "Error in Rhd2000Registers::createRhd2000Command: " <<
+                    "Only 'Register Write' commands take two arguments." << std::endl;
             return -1;
     }
 }
@@ -469,7 +467,7 @@ int Rhd2000Registers::createRhd2000Command(Rhd2000CommandType commandType, int a
 // Create a list of 60 commands to program most RAM registers on a RHD2000 chip, read those values
 // back to confirm programming, read ROM registers, and (if calibrate == true) run ADC calibration.
 // Returns the length of the command list.
-int Rhd2000Registers::createCommandListRegisterConfig(vector<int> &commandList, bool calibrate)
+int Rhd2000Registers::createCommandListRegisterConfig(std::vector<int> &commandList, bool calibrate)
 {
     commandList.clear();    // if command list already exists, erase it and start a new one
 
@@ -575,7 +573,7 @@ int Rhd2000Registers::createCommandListRegisterConfig(vector<int> &commandList, 
 // different RAM banks, and the appropriate command list selected at the right time.
 //
 // Returns the length of the command list.
-int Rhd2000Registers::createCommandListTempSensor(vector<int> &commandList)
+int Rhd2000Registers::createCommandListTempSensor(std::vector<int> &commandList)
 {
     int i;
 
@@ -644,7 +642,7 @@ int Rhd2000Registers::createCommandListTempSensor(vector<int> &commandList)
 // this command list to coordinate with the 60-command list generated by createCommandListTempSensor().
 //
 // Returns the length of the command list.
-int Rhd2000Registers::createCommandListUpdateDigOut(vector<int> &commandList)
+int Rhd2000Registers::createCommandListUpdateDigOut(std::vector<int> &commandList)
 {
     int i;
 
@@ -709,7 +707,7 @@ int Rhd2000Registers::createCommandListUpdateDigOut(vector<int> &commandList)
 // amplitude (in DAC steps, 0-128) using the on-chip impedance testing voltage DAC.  If frequency is set to zero,
 // a DC baseline waveform is created.
 // Returns the length of the command list.
-int Rhd2000Registers::createCommandListZcheckDac(vector<int> &commandList, double frequency, double amplitude)
+int Rhd2000Registers::createCommandListZcheckDac(std::vector<int> &commandList, double frequency, double amplitude)
 {
     int i, period, value;
     double t;
@@ -718,15 +716,15 @@ int Rhd2000Registers::createCommandListZcheckDac(vector<int> &commandList, doubl
     commandList.clear();    // if command list already exists, erase it and start a new one
 
     if (amplitude < 0.0 || amplitude > 128.0) {
-        cerr << "Error in Rhd2000Registers::createCommandListZcheckDac: Amplitude out of range." << endl;
+        std::cerr << "Error in Rhd2000Registers::createCommandListZcheckDac: Amplitude out of range." << std::endl;
         return -1;
     }
     if (frequency < 0.0) {
-        cerr << "Error in Rhd2000Registers::createCommandListZcheckDac: Negative frequency not allowed." << endl;
+        std::cerr << "Error in Rhd2000Registers::createCommandListZcheckDac: Negative frequency not allowed." << std::endl;
         return -1;
     } else if (frequency > sampleRate / 4.0) {
-        cerr << "Error in Rhd2000Registers::createCommandListZcheckDac: " <<
-                "Frequency too high relative to sampling rate." << endl;
+        std::cerr << "Error in Rhd2000Registers::createCommandListZcheckDac: " <<
+                "Frequency too high relative to sampling rate." << std::endl;
         return -1;
     }
     if (frequency == 0.0) {
@@ -736,7 +734,7 @@ int Rhd2000Registers::createCommandListZcheckDac(vector<int> &commandList, doubl
     } else {
         period = (int) floor(sampleRate / frequency + 0.5);
         if (period > MaxCommandLength) {
-            cerr << "Error in Rhd2000Registers::createCommandListZcheckDac: Frequency too low." << endl;
+            std::cerr << "Error in Rhd2000Registers::createCommandListZcheckDac: Frequency too low." << std::endl;
             return -1;
         } else {
             t = 0.0;

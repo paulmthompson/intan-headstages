@@ -23,7 +23,7 @@
 
 #include "IntanCommon.h"
 
-using namespace std;
+#include <vector>
 
 class Rhs2000Registers : public IntanCommon
 {
@@ -99,15 +99,15 @@ public:
     static double chargeRecoveryCurrentLimitToDouble(ChargeRecoveryCurrentLimit limit);
 	double setChargeRecoveryTargetVoltage(double vTarget);
 
-    int createCommandListRegisterConfig(vector<unsigned int> &commandList, bool updateStimParams);
-    int createCommandListRegisterRead(vector<unsigned int> &commandList);
-	int createCommandListZcheckDac(vector<unsigned int> &commandList, double frequency, double amplitude);
-	int createCommandListDummy(vector <unsigned int> &commandList, int n);
-	int createCommandListDummy(vector <unsigned int> &commandList, int n, unsigned int cmd);
-	int createCommandListSingleRegisterConfig(vector<unsigned int> &commandList, int reg);
-    int createCommandListSetStimMagnitudes(vector<unsigned int> &commandList, int channel,
+    int createCommandListRegisterConfig(std::vector<unsigned int> &commandList, bool updateStimParams);
+    int createCommandListRegisterRead(std::vector<unsigned int> &commandList);
+	int createCommandListZcheckDac(std::vector<unsigned int> &commandList, double frequency, double amplitude);
+	int createCommandListDummy(std::vector <unsigned int> &commandList, int n);
+	int createCommandListDummy(std::vector <unsigned int> &commandList, int n, unsigned int cmd);
+	int createCommandListSingleRegisterConfig(std::vector<unsigned int> &commandList, int reg);
+    int createCommandListSetStimMagnitudes(std::vector<unsigned int> &commandList, int channel,
                                            int posMag, int posTrim, int negMag, int negTrim);
-    int createCommandListConfigChargeRecovery(vector<unsigned int> &commandList, ChargeRecoveryCurrentLimit currentLimit, double targetVoltage);
+    int createCommandListConfigChargeRecovery(std::vector<unsigned int> &commandList, ChargeRecoveryCurrentLimit currentLimit, double targetVoltage);
 
 	enum Rhs2000CommandType {
 		Rhs2000CommandConvert,
@@ -152,10 +152,10 @@ private:
 	int rLDac3B;
 
 	// RHS2000 Register 10 variables
-	vector<int> ampFastSettle;
+	std::vector<int> ampFastSettle;
 
 	// RHS2000 Register 12 variables
-	vector<int> ampFLSelect;
+	std::vector<int> ampFLSelect;
 
 	// RHS2000 Register 32 variables
 	int stimEnableA;
@@ -181,35 +181,35 @@ private:
 	int chargeRecoveryCurrentLimitSel3;
 
 	// RHS2000 Register 38 variables
-	vector<int> dcAmpPwr;
+	std::vector<int> dcAmpPwr;
 
 	// RHS2000 Register 40 variables
-	vector<int> complianceMonitor;
+	std::vector<int> complianceMonitor;
 
 	// RHS2000 Register 42 variables
-	vector<int> stimOn;
+	std::vector<int> stimOn;
 
 	// RHS2000 Register 44 variables
-	vector<int> stimPol;
+	std::vector<int> stimPol;
 
 	// RHS2000 Register 46 variables
-	vector<int> chargeRecoverySwitch;
+	std::vector<int> chargeRecoverySwitch;
 
 	// RHS2000 Register 48 variables
-	vector<int> cLChargeRecoveryEn;
+	std::vector<int> cLChargeRecoveryEn;
 
 	// RHS2000 Register 50 variables
 	int faultCurrentDetect;
 
 	// RHS2000 Register 64-79 variables
-	vector<int> negCurrentMag;
-	vector<int> negCurrentTrim;
+	std::vector<int> negCurrentMag;
+	std::vector<int> negCurrentTrim;
 
 	// RHS2000 Register 96-111 variables
-	vector<int> posCurrentMag;
-	vector<int> posCurrentTrim;
+	std::vector<int> posCurrentMag;
+	std::vector<int> posCurrentTrim;
 
-	int vectorToWord(vector<int> &v);
+	int vectorToWord(std::vector<int> &v);
 
 	static const int MaxCommandLength = 8192; // size of on-FPGA auxiliary command RAM banks
 

@@ -27,8 +27,6 @@
 
 #include "rhs2000registers.h"
 
-using namespace std;
-
 // This class creates and manages a data structure representing the internal RAM registers on
 // an RHS2116 chip, and generates command lists to configure the chip and perform other functions.
 // Changing the value of variables within an instance of this class does not directly affect an
@@ -462,7 +460,7 @@ int Rhs2000Registers::getRegisterValue(int reg)
 }
 
 // Convert a 16-bit vector to a 16-bit word
-int Rhs2000Registers::vectorToWord(vector<int> &v)
+int Rhs2000Registers::vectorToWord(std::vector<int> &v)
 {
 	int word = 0;
 
@@ -537,22 +535,22 @@ double Rhs2000Registers::setLowerBandwidth(double lowerBandwidth, int select)
 	}
 
     /*
-	cout << endl;
-	cout << fixed << setprecision(1);
-	cout << "Rhs2000Registers::setLowerBandwidth" << endl;
+	std::cout << std::endl;
+	std::cout << fixed << setprecision(1);
+	std::cout << "Rhs2000Registers::setLowerBandwidth" << std::endl;
 
-	cout << "RL DAC3 = " << rLDac3 << ", DAC2 = " << rLDac2 << ", DAC1 = " << rLDac1 << endl;
-	cout << "RL target: " << rLTarget << " Ohms" << endl;
-	cout << "RL actual: " << rLActual << " Ohms" << endl;
+	std::cout << "RL DAC3 = " << rLDac3 << ", DAC2 = " << rLDac2 << ", DAC1 = " << rLDac1 << std::endl;
+	std::cout << "RL target: " << rLTarget << " Ohms" << std::endl;
+	std::cout << "RL actual: " << rLActual << " Ohms" << std::endl;
 
-	cout << setprecision(3);
+	std::cout << setprecision(3);
 
-	cout << "Lower bandwidth target: " << lowerBandwidth << " Hz" << endl;
-	cout << "Lower bandwidth actual: " << actualLowerBandwidth << " Hz" << endl;
+	std::cout << "Lower bandwidth target: " << lowerBandwidth << " Hz" << std::endl;
+	std::cout << "Lower bandwidth actual: " << actualLowerBandwidth << " Hz" << std::endl;
 
-	cout << endl;
-	cout << setprecision(6);
-	cout.unsetf(ios::floatfield);
+	std::cout << std::endl;
+	std::cout << setprecision(6);
+	std::cout.unsetf(ios::floatfield);
     */
 
 	return actualLowerBandwidth;
@@ -685,15 +683,15 @@ double Rhs2000Registers::stimStepSizeToDouble(StimStepSize step)
 int Rhs2000Registers::setPosStimMagnitude(int channel, int magnitude, int trim)
 {
 	if (channel < 0 || channel > 15) {
-		cerr << "Error in Rhs2000Registers::setPosStimMagnitude: channel out of range." << endl;
+		std::cerr << "Error in Rhs2000Registers::setPosStimMagnitude: channel out of range." << std::endl;
 		return -1;
 	}
 	if (magnitude < 0 || magnitude > 255) {
-		cerr << "Error in Rhs2000Registers::setPosStimMagnitude: magnitude out of range." << endl;
+		std::cerr << "Error in Rhs2000Registers::setPosStimMagnitude: magnitude out of range." << std::endl;
 		return -1;
 	}
 	if (trim < -128 || trim > 127) {
-		cerr << "Error in Rhs2000Registers::setPosStimMagnitude: trim out of range." << endl;
+		std::cerr << "Error in Rhs2000Registers::setPosStimMagnitude: trim out of range." << std::endl;
 		return -1;
 	}
 	posCurrentMag[channel] = magnitude;
@@ -706,15 +704,15 @@ int Rhs2000Registers::setPosStimMagnitude(int channel, int magnitude, int trim)
 int Rhs2000Registers::setNegStimMagnitude(int channel, int magnitude, int trim)
 {
 	if (channel < 0 || channel > 15) {
-		cerr << "Error in Rhs2000Registers::setNegStimMagnitude: channel out of range." << endl;
+		std::cerr << "Error in Rhs2000Registers::setNegStimMagnitude: channel out of range." << std::endl;
 		return -1;
 	}
 	if (magnitude < 0 || magnitude > 255) {
-		cerr << "Error in Rhs2000Registers::setNegStimMagnitude: magnitude out of range." << endl;
+		std::cerr << "Error in Rhs2000Registers::setNegStimMagnitude: magnitude out of range." << std::endl;
 		return -1;
 	}
 	if (trim < -128 || trim > 127) {
-		cerr << "Error in Rhs2000Registers::setNegStimMagnitude: trim out of range." << endl;
+		std::cerr << "Error in Rhs2000Registers::setNegStimMagnitude: trim out of range." << std::endl;
 		return -1;
 	}
 	negCurrentMag[channel] = magnitude;
@@ -850,8 +848,8 @@ unsigned int Rhs2000Registers::createRhs2000Command(Rhs2000CommandType commandTy
 		return 0xd0ff0000;   // 11010000 11111111 00000000 00000000 (Read from Register 255 with M flag set)
 		break;
 	default:
-		cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-			"Only 'Calibrate', 'Clear Calibration', or 'Compliance Monitor Reset' commands take zero arguments." << endl;
+		std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+			"Only 'Calibrate', 'Clear Calibration', or 'Compliance Monitor Reset' commands take zero arguments." << std::endl;
 		return 0xffffffff;
 	}
 }
@@ -862,8 +860,8 @@ unsigned int Rhs2000Registers::createRhs2000Command(Rhs2000CommandType commandTy
 	switch (commandType) {
 	case Rhs2000CommandConvert:
 		if (arg1 > 15) {
-			cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-				"Channel number out of range." << endl;
+			std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+				"Channel number out of range." << std::endl;
 			return 0xffffffff;
 		}
 		return 0x00000000 + (arg1 << 16);  // 00umdh00 00cccccc 00000000 00000000; if the command is 'Convert',
@@ -871,16 +869,16 @@ unsigned int Rhs2000Registers::createRhs2000Command(Rhs2000CommandType commandTy
 		break;
 	case Rhs2000CommandRegRead:
 		if (arg1 > 255) {
-			cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-				"Register address out of range." << endl;
+			std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+				"Register address out of range." << std::endl;
 			return 0xffffffff;
 		}
 		return 0xc0000000 + (arg1 << 16);  // 11um0000 rrrrrrrr 00000000 00000000; if the command is 'Register Read',
 									       // arg1 is the register address
 		break;
 	default:
-		cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-			"Only 'Convert' and 'Register Read' commands take one argument." << endl;
+		std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+			"Only 'Convert' and 'Register Read' commands take one argument." << std::endl;
 		return 0xffffffff;
 	}
 }
@@ -891,13 +889,13 @@ unsigned int Rhs2000Registers::createRhs2000Command(Rhs2000CommandType commandTy
 	switch (commandType) {
 	case Rhs2000CommandRegWrite:
 		if (arg1 > 255) {
-			cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-				"Register address out of range." << endl;
+			std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+				"Register address out of range." << std::endl;
 			return 0xffffffff;
 		}
 		if (arg2 > 65535) {
-			cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-				"Register data out of range." << endl;
+			std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+				"Register data out of range." << std::endl;
 			return 0xffffffff;
 		}
 		return 0x80000000 + (arg1 << 16) + arg2; // 10um0000 rrrrrrrr dddddddd dddddddd; if the command is 'Register Write',
@@ -905,16 +903,16 @@ unsigned int Rhs2000Registers::createRhs2000Command(Rhs2000CommandType commandTy
 		break;
 	case Rhs2000CommandConvert:
 		if (arg1 > 15) {
-			cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-				"Channel number out of range." << endl;
+			std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+				"Channel number out of range." << std::endl;
 			return 0xffffffff;
 		}
 		return 0x00000000 + (arg2 << 26) + (arg1 << 16);  // 00umdh00 00cccccc 00000000 00000000; if the command is 'Convert',
 														  // arg1 is the channel number and arg2 is the H flag
 		break;
 	default:
-		cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-			"Only 'Register Write' and 'Convert' commands take two arguments." << endl;
+		std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+			"Only 'Register Write' and 'Convert' commands take two arguments." << std::endl;
 		return 0xffffffff;
 	}
 }
@@ -925,21 +923,21 @@ unsigned int Rhs2000Registers::createRhs2000Command(Rhs2000CommandType commandTy
 	switch (commandType) {
 	case Rhs2000CommandRegWrite:
 		if (arg1 > 255) {
-			cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-				"Register address out of range." << endl;
+			std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+				"Register address out of range." << std::endl;
 			return 0xffffffff;
 		}
 		if (arg2 > 65535) {
-			cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-				"Register data out of range." << endl;
+			std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+				"Register data out of range." << std::endl;
 			return 0xffffffff;
 		}
 		return 0x80000000 + (uFlag << 29) + (mFlag << 28) + (arg1 << 16) + arg2; // 10um0000 rrrrrrrr dddddddd dddddddd; if the command is 'Register Write',
 												 // arg1 is the register address and arg2 is the data
 		break;
 	default:
-		cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
-			"Only 'Register Write' commands take four arguments." << endl;
+		std::cerr << "Error in Rhs2000Registers::createRhs2000Command: " <<
+			"Only 'Register Write' commands take four arguments." << std::endl;
 		return 0xffffffff;
 	}
 }
@@ -948,7 +946,7 @@ unsigned int Rhs2000Registers::createRhs2000Command(Rhs2000CommandType commandTy
 // back to confirm programming, and read ROM registers.
 // If updateStimParams == true, update stimulation amplitudes and other charge-recovery parameters.
 // Returns the length of the command list.
-int Rhs2000Registers::createCommandListRegisterConfig(vector<unsigned int> &commandList, bool updateStimParams)
+int Rhs2000Registers::createCommandListRegisterConfig(std::vector<unsigned int> &commandList, bool updateStimParams)
 {
 	commandList.clear();    // if command list already exists, erase it and start a new one
 
@@ -1143,7 +1141,7 @@ int Rhs2000Registers::createCommandListRegisterConfig(vector<unsigned int> &comm
 }
 
 // Read all registers from chip without changing any values.
-int Rhs2000Registers::createCommandListRegisterRead(vector<unsigned int> &commandList)
+int Rhs2000Registers::createCommandListRegisterRead(std::vector<unsigned int> &commandList)
 {
     commandList.clear();    // if command list already exists, erase it and start a new one
 
@@ -1240,7 +1238,7 @@ int Rhs2000Registers::createCommandListRegisterRead(vector<unsigned int> &comman
 // amplitude (in DAC steps, 0-128) using the on-chip impedance testing voltage DAC.  If frequency is set to zero,
 // a DC baseline waveform is created.
 // Returns the length of the command list.
-int Rhs2000Registers::createCommandListZcheckDac(vector<unsigned int> &commandList, double frequency, double amplitude)
+int Rhs2000Registers::createCommandListZcheckDac(std::vector<unsigned int> &commandList, double frequency, double amplitude)
 {
 	int i, period, value;
 	double t;
@@ -1249,16 +1247,16 @@ int Rhs2000Registers::createCommandListZcheckDac(vector<unsigned int> &commandLi
 	commandList.clear();    // if command list already exists, erase it and start a new one
 
 	if (amplitude < 0.0 || amplitude > 128.0) {
-		cerr << "Error in Rhs2000Registers::createCommandListZcheckDac: Amplitude out of range." << endl;
+		std::cerr << "Error in Rhs2000Registers::createCommandListZcheckDac: Amplitude out of range." << std::endl;
 		return -1;
 	}
 	if (frequency < 0.0) {
-		cerr << "Error in Rhs2000Registers::createCommandListZcheckDac: Negative frequency not allowed." << endl;
+		std::cerr << "Error in Rhs2000Registers::createCommandListZcheckDac: Negative frequency not allowed." << std::endl;
 		return -1;
 	}
 	else if (frequency > sampleRate / 4.0) {
-		cerr << "Error in Rhs2000Registers::createCommandListZcheckDac: " <<
-			"Frequency too high relative to sampling rate." << endl;
+		std::cerr << "Error in Rhs2000Registers::createCommandListZcheckDac: " <<
+			"Frequency too high relative to sampling rate." << std::endl;
 		return -1;
 	}
 	if (frequency == 0.0) {
@@ -1269,7 +1267,7 @@ int Rhs2000Registers::createCommandListZcheckDac(vector<unsigned int> &commandLi
 	else {
 		period = (int)floor(sampleRate / frequency + 0.5);
 		if (period > MaxCommandLength) {
-			cerr << "Error in Rhs2000Registers::createCommandListZcheckDac: Frequency too low." << endl;
+			std::cerr << "Error in Rhs2000Registers::createCommandListZcheckDac: Frequency too low." << std::endl;
 			return -1;
 		}
 		else {
@@ -1293,7 +1291,7 @@ int Rhs2000Registers::createCommandListZcheckDac(vector<unsigned int> &commandLi
 
 // Create a list of dummy commands for the RHS2116 chip.
 // Returns the length of the command list (which should be n).
-int Rhs2000Registers::createCommandListDummy(vector <unsigned int> &commandList, int n)
+int Rhs2000Registers::createCommandListDummy(std::vector <unsigned int> &commandList, int n)
 {
 	commandList.clear();
 
@@ -1306,7 +1304,7 @@ int Rhs2000Registers::createCommandListDummy(vector <unsigned int> &commandList,
 
 // Create a list of dummy commands for the RHS2116 chip with a specific command.
 // Returns the length of the command list (which should be n).
-int Rhs2000Registers::createCommandListDummy(vector <unsigned int> &commandList, int n, unsigned int cmd)
+int Rhs2000Registers::createCommandListDummy(std::vector <unsigned int> &commandList, int n, unsigned int cmd)
 {
 	commandList.clear();
 
@@ -1319,7 +1317,7 @@ int Rhs2000Registers::createCommandListDummy(vector <unsigned int> &commandList,
 
 // Create a list of commands for the RHS2116 chip to update a single RAM register.
 // Returns the length of the command list (which should be 128).
-int Rhs2000Registers::createCommandListSingleRegisterConfig(vector<unsigned int> &commandList, int reg)
+int Rhs2000Registers::createCommandListSingleRegisterConfig(std::vector<unsigned int> &commandList, int reg)
 {
 	commandList.clear();    // If command list already exists, erase it and start a new one.
 
@@ -1340,7 +1338,7 @@ int Rhs2000Registers::createCommandListSingleRegisterConfig(vector<unsigned int>
 
 // Set positive and negative stimulation magnitude and trim parameters for a single channel.
 // Returns the length of the command list (which should be 128).
-int Rhs2000Registers::createCommandListSetStimMagnitudes(vector<unsigned int> &commandList, int channel,
+int Rhs2000Registers::createCommandListSetStimMagnitudes(std::vector<unsigned int> &commandList, int channel,
                                                          int posMag, int posTrim, int negMag, int negTrim)
 {
     commandList.clear();    // If command list already exists, erase it and start a new one.
@@ -1366,7 +1364,7 @@ int Rhs2000Registers::createCommandListSetStimMagnitudes(vector<unsigned int> &c
 
 // Set charge recovery current limit and target voltage (Registers 36 and 37).
 // Returns the length of the command list (which should be 128).
-int Rhs2000Registers::createCommandListConfigChargeRecovery(vector<unsigned int> &commandList,
+int Rhs2000Registers::createCommandListConfigChargeRecovery(std::vector<unsigned int> &commandList,
                                                             ChargeRecoveryCurrentLimit currentLimit, double targetVoltage)
 {
     commandList.clear();    // If command list already exists, erase it and start a new one.
