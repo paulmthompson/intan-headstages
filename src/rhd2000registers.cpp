@@ -23,6 +23,7 @@
 #include <cmath>
 #include <vector>
 #include <queue>
+#include <numbers>
 
 #include "rhd2000registers.h"
 
@@ -101,9 +102,9 @@ Rhd2000Registers::Rhd2000Registers(double sampleRate)
 // (This function does not change the sampling rate of the FPGA; for this, use Rhd2000EvalBoard::setSampleRate.)
 void Rhd2000Registers::defineSampleRate(double newSampleRate)
 {
-    sampleRate = newSampleRate;
+    this->sampleRate = newSampleRate;
 
-    muxLoad = 0;
+    this->muxLoad = 0;
 
     if (sampleRate < 3334.0) {
         muxBias = 40;
@@ -711,7 +712,6 @@ int Rhd2000Registers::createCommandListZcheckDac(std::vector<int> &commandList, 
 {
     int i, period, value;
     double t;
-    const double Pi = 2*acos(0.0);
 
     commandList.clear();    // if command list already exists, erase it and start a new one
 
@@ -739,7 +739,7 @@ int Rhd2000Registers::createCommandListZcheckDac(std::vector<int> &commandList, 
         } else {
             t = 0.0;
             for (i = 0; i < period; ++i) {
-                value = (int) floor(amplitude * sin(2 * Pi * frequency * t) + 128.0 + 0.5);
+                value = static_cast<int>(floor(amplitude * sin(2 * std::numbers::pi * frequency * t) + 128.0 + 0.5));
                 if (value < 0) {
                     value = 0;
                 } else if (value > 255) {

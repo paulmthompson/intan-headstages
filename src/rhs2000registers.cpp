@@ -24,6 +24,7 @@
 #include <vector>
 #include <queue>
 #include <limits>
+#include <numbers>
 
 #include "rhs2000registers.h"
 
@@ -1242,7 +1243,6 @@ int Rhs2000Registers::createCommandListZcheckDac(std::vector<unsigned int> &comm
 {
 	int i, period, value;
 	double t;
-	const double Pi = 2 * acos(0.0);
 
 	commandList.clear();    // if command list already exists, erase it and start a new one
 
@@ -1273,7 +1273,7 @@ int Rhs2000Registers::createCommandListZcheckDac(std::vector<unsigned int> &comm
 		else {
 			t = 0.0;
 			for (i = 0; i < period; ++i) {
-				value = (int)floor(amplitude * sin(2 * Pi * frequency * t) + 128.0 + 0.5);
+				value = static_cast<int>(floor(amplitude * sin(2 * std::numbers::pi * frequency * t) + 128.0 + 0.5));
 				if (value < 0) {
 					value = 0;
 				}

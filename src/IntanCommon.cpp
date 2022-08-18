@@ -2,6 +2,7 @@
 #include "IntanCommon.h"
 
 #include <cmath>
+#include <numbers>
 
 
 // Enable or disable DSP offset removal filter
@@ -44,18 +45,16 @@ void IntanCommon::setZcheckScale(ZcheckCs scale)
 // newDspCutoffFreq (in Hz) as possible; returns the actual cutoff frequency (in Hz).
 double IntanCommon::setDspCutoffFreq(double newDspCutoffFreq)
 {
-	int n;
 	double x, fCutoff[16], logNewDspCutoffFreq, logFCutoff[16], minLogDiff;
-	const double Pi = 2 * acos(0.0);
 
 	fCutoff[0] = 0.0;   // We will not be using fCutoff[0], but we initialize it to be safe
 
 	logNewDspCutoffFreq = log10(newDspCutoffFreq);
 
 	// Generate table of all possible DSP cutoff frequencies
-	for (n = 1; n < 16; ++n) {
+	for (int n = 1; n < 16; ++n) {
 		x = pow(2.0, (double)n);
-		fCutoff[n] = sampleRate * log(x / (x - 1.0)) / (2 * Pi);
+		fCutoff[n] = sampleRate * log(x / (x - 1.0)) / (2 * std::numbers::pi);
 		logFCutoff[n] = log10(fCutoff[n]);
 		// cout << "  fCutoff[" << n << "] = " << fCutoff[n] << " Hz" << endl;
 	}
@@ -69,7 +68,7 @@ double IntanCommon::setDspCutoffFreq(double newDspCutoffFreq)
 	}
 	else {
 		minLogDiff = 10000000.0;
-		for (n = 1; n < 16; ++n) {
+		for (int n = 1; n < 16; ++n) {
             if (fabs(logNewDspCutoffFreq - logFCutoff[n]) < minLogDiff) {
                 minLogDiff = fabs(logNewDspCutoffFreq - logFCutoff[n]);
 				dspCutoffFreq = n;
@@ -84,12 +83,9 @@ double IntanCommon::setDspCutoffFreq(double newDspCutoffFreq)
 // Returns the current value of the DSP offset removal cutoff frequency (in Hz).
 double IntanCommon::getDspCutoffFreq() const
 {
-	double x;
-	const double Pi = 2 * acos(0.0);
+	double x = pow(2.0, static_cast<double>(dspCutoffFreq));
 
-	x = pow(2.0, (double)dspCutoffFreq);
-
-	return sampleRate * log(x / (x - 1.0)) / (2 * Pi);
+	return sampleRate * log(x / (x - 1.0)) / (2 * std::numbers::pi);
 }
 
 // Returns the value of the RH1 resistor (in ohms) corresponding to a particular upper
